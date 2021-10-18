@@ -1,1 +1,1 @@
-from .base import BaseRepository
+from .base_repo import BaseRepository

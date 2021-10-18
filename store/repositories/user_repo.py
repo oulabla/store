@@ -44,7 +44,7 @@ class UserRepository(BaseRepository):
             yield record
 
 
-    async def find(self, session: AsyncSession, id : int) -> User:
+    async def find_one(self, session: AsyncSession, id : int) -> User:
         select_query = (
             select(User)
             .options(

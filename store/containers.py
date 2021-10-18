@@ -7,6 +7,8 @@ from aiohttp import web
 from store import middlewares
 from store.controllers import health_controller, user_controller
 from store.repositories import user_repo
+from store.repositories import role_repo
+from store.repositories.role_repo import RoleRepository
 
 from .logger import AppLogger
 from .database import DataBaseManager
@@ -31,8 +33,9 @@ class ApplicationContainer(containers.DeclarativeContainer):
     ])
 
     user_repository = providers.Factory(user_repo.UserRepository)
+    role_repository = providers.Factory(RoleRepository)
 
     health_controller = providers.Factory(health_controller.HealthController)
-    user_controller = providers.Factory(user_controller.UserController, logger=logger, user_repository=user_repository)
+    user_controller = providers.Factory(user_controller.UserController, logger=logger, user_repository=user_repository, role_repository=role_repository)
 
     index_view = aiohttp.View(index_view, logger=logger)

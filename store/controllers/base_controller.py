@@ -26,7 +26,10 @@ class BaseJsonController:
     @classmethod
     async def response(cls, body: Any = None, status: int = 200, reason : str = None, headers: Dict[str, Any] = None) -> web.Response:
         loop = asyncio.get_running_loop()
-        stringify_future = loop.run_in_executor(None, ujson.dumps, body)
+        if isinstance(body, dict) and "success" not in body.keys():
+            body["success"] = True
+
+        stringify_future = loop.run_in_executor(None, ujson.dumps, body)        
         json_body = await stringify_future
 
         return web.Response(

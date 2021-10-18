@@ -1,8 +1,5 @@
-
-
 import abc
-import abc
-from typing import Any, AsyncIterator, Dict
+from typing import Any, AsyncIterator, Dict, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -17,13 +14,24 @@ class BaseRepository(abc.ABC):
     def model(self) -> BaseModel:
         pass
 
-    async def find(self, session: AsyncSession, id : int) -> BaseModel:
+    async def find_one(self, session: AsyncSession, id : int) -> BaseModel:
         select_query = (
             select(self.model)
             .filter_by(id=id)
         )
         result = await session.execute(select_query)
         return result.scalars().one()  
+
+    async def find(self, session: AsyncSession, filter_by) -> List[BaseModel]:
+        print(filter_by)
+        select_query = (
+            select(self.model)
+            # .filter_by(filter_by)
+        )
+        
+        result = await session.execute(select_query)
+        return result.scalars()
+    
 
     
     async def count(self, session: AsyncSession, *filters) -> int:
