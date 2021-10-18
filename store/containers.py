@@ -6,6 +6,7 @@ from aiohttp import web
 
 from store import middlewares
 from store.controllers import health_controller, user_controller
+from store.repositories import user_repo
 
 from .logger import AppLogger
 from .database import DataBaseManager
@@ -17,7 +18,7 @@ from store.controllers import HealthController
 
 
 class ApplicationContainer(containers.DeclarativeContainer):
-    container: ApplicationContainer =  None
+    container: ApplicationContainer = None
     
 
     config = providers.Configuration()
@@ -25,11 +26,13 @@ class ApplicationContainer(containers.DeclarativeContainer):
     logger = providers.Factory(AppLogger, name=config.application.name)
     database = providers.Factory(DataBaseManager, logger=logger, conn_url=config.database.url)
     
-    app  = aiohttp.Application(web.Application, logger=logger, middlewares=[
+    app = aiohttp.Application(web.Application, logger=logger, middlewares=[
         request_context_middleware
     ])
 
+    user_repository = providers.Factory(user_repo.UserRepository)
+
     health_controller = providers.Factory(health_controller.HealthController)
-    user_controller = providers.Factory(user_controller.UserController, logger=logger)
+    user_controller = providers.Factory(user_controller.UserController, logger=logger, user_repository=user_repository)
 
     index_view = aiohttp.View(index_view, logger=logger)

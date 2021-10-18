@@ -11,8 +11,6 @@ from .containers import ApplicationContainer
 from .routes import setup_routes
 
 
-
-
 def get_current_request(logger: AppLogger) -> str:
     request_id = aiotask_context.get("X-Request-ID", None)
 

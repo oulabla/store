@@ -20,6 +20,8 @@ class BaseJsonController:
         520: 'Unknown error.'
     }
 
+    def setup(app: web.Application):
+        pass
     
     @classmethod
     async def response(cls, body: Any = None, status: int = 200, reason : str = None, headers: Dict[str, Any] = None) -> web.Response:

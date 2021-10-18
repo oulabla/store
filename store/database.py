@@ -16,27 +16,6 @@ class DatabaseNotInitialized(Exception):
     def __init__(self, *args, **kwargs):
         super(DatabaseNotInitialized, self).__init__(args, kwargs)
 
-class TransactionSession:
-
-    def __init__(self, db: DataBaseManager, expire_on_commit: bool = True) -> None:
-        self.db = db
-        if db.Session is None or db.OnCommitExpiringSession is None:
-            raise DatabaseNotInitialized("The global database.db singleton is not initialized!")
-
-        self._session = None
-        self._expire_on_commit = expire_on_commit
-
-    def __aenter__(self) -> AsyncSession:
-        if self._expire_on_commit is True:
-            self._session = self.db.OnCommitExpiringSession()
-        else:
-            self._session = self.db.Session()
-
-        return self._session
-
-
-
-
 
 class DataBaseManager:
 
@@ -46,6 +25,7 @@ class DataBaseManager:
         # self.metadata = MetaData()
         self.Session = None
         self.OnCommitExpiringSession = None
+        self.AsyncSessionFactory = None
         self.BaseModel = BaseModel
 
     @property
@@ -62,6 +42,12 @@ class DataBaseManager:
             self._engine = self.create_engine()
         else:
             self._engine = engine
+
+        # print("initialized")
+        self.AsyncSessionFactory = sessionmaker(
+            self._engine, expire_on_commit=False, class_=AsyncSession
+        )
+        # print(self.AsyncSessionFactory)
 
         self.Session = scoped_session(
             sessionmaker(bind=self._engine, expire_on_commit=False),
