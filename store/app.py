@@ -1,9 +1,13 @@
+import base64
+from cryptography import fernet
 import asyncio
 from aiohttp import web
 from dependency_injector import containers
 import uvloop
 from aiohttp_swagger import *
 import aiotask_context
+from aiohttp_session import setup as setup_sesssion, SimpleCookieStorage
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
 from .database import DataBaseManager
 from .logger import AppLogger
@@ -49,7 +53,10 @@ def create_app() -> web.Application:
     app: web.Application = container.app()
     app.container = container
     container.config.from_yaml('config.yaml')
-
+    
+    fernet_key = fernet.Fernet.generate_key()
+    secret_key = base64.urlsafe_b64decode(fernet_key)
+    setup_sesssion(app, EncryptedCookieStorage(secret_key))
     setup_routes(app)
     setup_swagger(app, swagger_url='doc', ui_version=3)
 
