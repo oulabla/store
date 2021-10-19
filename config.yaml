@@ -2,7 +2,7 @@ application:
   port: 8080
   name: Store App
 database:
-  # url: postgresql+asyncpg://postgres:U5w6yZvpBNAjcSLZZx2jb5nfuySa6ZQF@92.63.110.64:5432/store
-  url: postgresql+asyncpg://postgres:root@localhost:5432/store
+  url: postgresql+asyncpg://postgres:U5w6yZvpBNAjcSLZZx2jb5nfuySa6ZQF@92.63.110.64:5432/store
+  # url: postgresql+asyncpg://postgres:root@localhost:5432/store
   # min_connection_pool_size: 1
   # max_connection_pool_size: 8

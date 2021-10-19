@@ -13,3 +13,6 @@ class Role(BaseModel):
 
     def __str__(self) -> str:
         return f'Role(id: {self.id}, name: {self.name}, created_at: {self.created_at.strftime("%d.%m.%Y %H:%M:%S")})'
+    
+    def __repr__(self) -> str:
+        return f'Role(id: {self.id}, name: {self.name}, created_at: {self.created_at.strftime("%d.%m.%Y %H:%M:%S")})'

@@ -22,33 +22,37 @@ class BaseRepository(abc.ABC):
         result = await session.execute(select_query)
         return result.scalars().one()  
 
-    async def find(self, session: AsyncSession, filter_by) -> List[BaseModel]:
-        print(filter_by)
+
+    async def find(self, session: AsyncSession, filter = None) -> List[BaseModel]:
+        if filter == None:
+            filter = 1==1
         select_query = (
             select(self.model)
-            # .filter_by(filter_by)
+            .filter(filter)
         )
-        
         result = await session.execute(select_query)
-        return result.scalars()
-    
+        return result.scalars().all()
 
     
-    async def count(self, session: AsyncSession, *filters) -> int:
+    async def count(self, session: AsyncSession, filter = None) -> int:
+        if filter == None:
+            filter = 1==1        
         select_query = (
             select(func.count(self.model.id))
-        ).filter_by(*filters)
+        ).filter(filter)
         
         result = await session.execute(select_query)
 
         return result.scalar()
 
-    async def stream_list(self, session: AsyncSession, *filters, limit:int=10, offset:int=0)  -> AsyncIterator[Any]:
+    async def stream_list(self, session: AsyncSession, filter=None, limit:int=10, offset:int=0)  -> AsyncIterator[Any]:
+        if filter == None:
+            filter = 1==1
         query= (
             select(
                 self.model
             )
-            .filter_by(*filters)
+            .filter(filter)
             .order_by(self.model.id)                    
             .limit(limit)
             .offset(offset)
@@ -57,7 +61,7 @@ class BaseRepository(abc.ABC):
         data_stream = await session.stream(query)
 
         async for row in data_stream:
-            yield row
+            yield row[0]
 
 
     async def persist(self, session: AsyncSession, entity: BaseModel):

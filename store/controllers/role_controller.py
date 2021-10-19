@@ -2,22 +2,20 @@ from store.logger import AppLogger
 from aiohttp import web
 from store.repositories.role_repo import RoleRepository
 
-from store.repositories.user_repo import UserRepository
 from store.repositories.role_repo import RoleRepository
 from . import BaseJsonController
 
 from store.logger import AppLogger
-from store.schemas.user_schema import UserSchema
+from store.schemas.role_schema import RoleSchema
 from store.models.phone import Phone
 
-class UserController(BaseJsonController):
-    ROUTE = "/api/v1/users"
+class RoleController(BaseJsonController):
+    ROUTE = "/api/v1/roles"
 
-    def __init__(self, logger: AppLogger, user_repository: UserRepository, role_repository: RoleRepository) -> None:
+    def __init__(self, logger: AppLogger, role_repository: RoleRepository) -> None:
         super().__init__()
         self.logger = logger
-        self.repo = user_repository
-        self.role_repo = role_repository
+        self.repo = role_repository
 
     def setup(self, app: web.Application):
         app.add_routes([
@@ -31,11 +29,12 @@ class UserController(BaseJsonController):
     async def get_list_handler(self, request: web.Request) -> web.Response:
         data = []
         total = 0
+        schema = RoleSchema()
         async with request.app.db.AsyncSessionFactory() as session:
             async with session.begin():
                 total = await self.repo.count(session)
-                async for user_el in self.repo.stream_list(session):
-                    data.append(user_el)
+                async for role in self.repo.stream_list(session):
+                    data.append(schema.dump(role))
 
         return await self.response({
             "data": data,
@@ -49,7 +48,7 @@ class UserController(BaseJsonController):
             async with session.begin():
                 user = await self.repo.find_one(session, id)
 
-        schema = UserSchema() 
+        schema = RoleSchema() 
         return await self.response({
             "data": schema.dump(user),
         })
@@ -67,7 +66,7 @@ class UserController(BaseJsonController):
             async with session.begin():
                 await self.repo.persist(session, user)
         
-        schema = UserSchema() 
+        schema = RoleSchema() 
         return await self.response({
             "data": schema.dump(user),
         })
@@ -84,52 +83,14 @@ class UserController(BaseJsonController):
             raise web.HTTPBadRequest("No field name")
         name = body["name"]
 
-        additional_info = ""
-        if "additionalInfo" in body:
-            additional_info = body["additionalInfo"]
-
-        roles_id_list = []
-        if "roles" in body:
-            for role_data in body["roles"]:
-                if "id" not in role_data:
-                    continue
-                roles_id_list.append(role_data["id"])
-
-        schema = UserSchema() 
+        schema = RoleSchema() 
         data = {}
         async with request.app.db.AsyncSessionFactory() as session:
             async with session.begin():
-                user = await self.repo.find_one(session, id)
-                user.additional_info = additional_info
-                user.name = name
-                
-                roleModel = self.role_repo.model
-                roles = await self.role_repo.find(session,  roleModel.id.in_(roles_id_list))
-                user.roles.clear()
-                for role in roles:
-                    user.roles.append(role)
-
-                if "phones" in body:
-                    new_phones_id_list = [phone_data['id'] for phone_data in body["phones"] if 'id' in phone_data]
-                    list_phones_difference = [phone for phone in user.phones if phone.id not in new_phones_id_list]
-                    for phone in list_phones_difference:
-                        user.phones.remove(phone)
-                
-                    for phone_data in body["phones"]:
-                        phone = None
-                        if "id" in phone_data:
-                            phone = next((phone for phone in user.phones if phone.id == int(phone_data["id"])), None)
-                        if phone is None:
-                            phone = Phone()
-                            phone.user_id = user.id
-                            session.add(phone)
-                            user.phones.append(phone)
-                        phone.phone = phone_data["phone"]
-                else:
-                    user.phones.clear()
-
+                role = await self.repo.find_one(session, id)
+                role.name = name
                 await session.flush()
-                data = schema.dump(user)
+                data = schema.dump(role)
                 await session.commit()
         
         
@@ -141,7 +102,7 @@ class UserController(BaseJsonController):
     async def delete_handler(self, request: web.Request) -> web.Response:
         id = int(request.match_info['id'])
         
-        schema = UserSchema() 
+        schema = RoleSchema() 
         data = {}
         async with request.app.db.AsyncSessionFactory() as session:
             async with session.begin():
