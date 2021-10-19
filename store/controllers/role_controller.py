@@ -59,16 +59,18 @@ class RoleController(BaseJsonController):
         if "name" not in body:
             raise web.HTTPBadRequest("No field name")
     
-        user = self.repo.model()
-        user.name = str(body["name"])
+        role = self.repo.model()
+        role.name = str(body["name"])
         
         async with request.app.db.AsyncSessionFactory() as session:
             async with session.begin():
-                await self.repo.persist(session, user)
+                await self.repo.persist(session, role)
+                session.flush()
+                session.commit()
         
         schema = RoleSchema() 
         return await self.response({
-            "data": schema.dump(user),
+            "data": schema.dump(role),
         })
 
     async def update_handler(self, request: web.Request) -> web.Response:
