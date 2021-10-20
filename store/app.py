@@ -66,7 +66,7 @@ def create_app() -> web.Application:
         # definitions=swagger_models_definitions,
         swagger_validator_url='//online.swagger.io/validator'
     )
-
+    app.router.add_static('/static', path='./static/store-app/src/', name='static')
     
 
     app.on_startup.append(on_app_startup)
