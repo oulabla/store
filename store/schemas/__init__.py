@@ -7,5 +7,5 @@ class BaseSchema(SQLAlchemySchema):
         parts = iter(s.split("_"))
         return next(parts) + "".join(i.title() for i in parts)
     
-    def on_bind_field(self, field_name, field_obj):
-        field_obj.data_key = BaseSchema.camelcase(field_obj.data_key or field_name)
+    # def on_bind_field(self, field_name, field_obj):
+    #     field_obj.data_key = BaseSchema.camelcase(field_obj.data_key or field_name)

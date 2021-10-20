@@ -1,0 +1,367 @@
+swagger: "2.0"
+info:
+  description: |
+    This is a simple store project with aiohttp.
+  version: "1.0.0"
+  title: Store project
+  # termsOfService: api/v1
+  contact:
+    name: oulabla@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+basePath: /api/v1
+schemes:
+  - http
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      summary: Returns all users
+      description: Returns a list of users
+      produces:
+      - application/json
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: offset
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/User"
+
+    post:
+      tags:
+        - users
+      summary: Insert user
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          required: true
+          name: user
+          schema:
+            $ref: '#/definitions/User'        
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/User"
+        "400":
+          description: Invalid name supplied     
+  
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: Get user by user id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The user's id.
+          required: true
+          type: integer
+      responses:
+        "404":
+          description: User not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/User"
+        "400":
+          description: Invalid username supplied          
+    put:
+      tags:
+        - users
+      summary: Update user by user id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The user's id.
+          required: true
+          type: integer
+        - in: body
+          required: true
+          name: user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        "404":
+          description: User not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/User"
+        "400":
+          description: Invalid username supplied          
+
+    delete:
+      tags:
+        - users
+      summary: Delete user by user id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The user's id.
+          required: true
+          type: integer
+      responses:
+        "404":
+          description: User not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/User"
+        "400":
+          description: Invalid username supplied          
+
+
+  /roles:
+    get:
+      tags:
+        - roles
+      summary: Returns all roles
+      description: Returns a list of roles
+      produces:
+      - application/json
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: offset
+          type: integer
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Role"
+
+    post:
+      tags:
+        - roles
+      summary: Insert role
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          required: true
+          name: role
+          schema:
+            $ref: '#/definitions/Role'        
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/Role"
+        "400":
+          description: Invalid name supplied     
+  
+  /roles/{id}:
+    get:
+      tags:
+        - roles
+      summary: Get role by id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The role's id.
+          required: true
+          type: integer
+      responses:
+        "404":
+          description: Role not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/Role"
+        "400":
+          description: Invalid username supplied          
+    put:
+      tags:
+        - roles
+      summary: Update role by id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The role's id.
+          required: true
+          type: integer
+        - in: body
+          required: true
+          name: role
+          schema:
+            $ref: '#/definitions/Role'
+      responses:
+        "404":
+          description: Role not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/Role"
+        "400":
+          description: Invalid role supplied          
+
+    delete:
+      tags:
+        - roles
+      summary: Delete role by id
+      description: ""
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: The role's id.
+          required: true
+          type: integer
+      responses:
+        "404":
+          description: Role not found
+        "200":
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              success:
+                type: string
+                default: true
+                description: must be true
+              data:
+                $ref: "#/definitions/Role"
+        "400":
+          description: Invalid role supplied        
+#### MODELS ####
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      # username:
+      #   type:
+      #     - "string"
+      #     - "null"
+      name:
+        type: string
+      additional_info:
+        type: string
+      phones:
+        type: array
+        items:
+          $ref: "#/definitions/Phone"
+      roles:
+        type: array
+        items:
+          $ref: "#/definitions/Role"
+
+      
+  Phone:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      phone:
+        type: string
+        description: number
+  
+  Role:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        description: number

@@ -13,6 +13,7 @@ from .database import DataBaseManager
 from .logger import AppLogger
 from .containers import ApplicationContainer
 from .routes import setup_routes
+from .swagger_definitions import swagger_models_definitions
 
 
 def get_current_request(logger: AppLogger) -> str:
@@ -58,7 +59,13 @@ def create_app() -> web.Application:
     secret_key = base64.urlsafe_b64decode(fernet_key)
     setup_sesssion(app, EncryptedCookieStorage(secret_key))
     setup_routes(app)
-    setup_swagger(app, swagger_url='doc', ui_version=3)
+    setup_swagger(app, 
+        swagger_url='doc', 
+        ui_version=3, 
+        swagger_from_file="swagger_doc.yaml",
+        # definitions=swagger_models_definitions,
+        swagger_validator_url='//online.swagger.io/validator'
+    )
 
     
 
