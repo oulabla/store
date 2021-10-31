@@ -64,11 +64,13 @@ def create_app() -> web.Application:
     container.config.from_yaml('config.yaml')
     
     fernet_key = fernet.Fernet.generate_key()
+    fernet_key = "Ank_yFUCW4AruyO_T6cRoRZ99O6BaZC0ys7N9kZ4DIw="
+    # print(f'fernet key: {fernet_key}')
     secret_key = base64.urlsafe_b64decode(fernet_key)
     setup_sesssion(app, EncryptedCookieStorage(secret_key))
 
     cors = aiohttp_cors.setup(app, defaults={
-    "*": aiohttp_cors.ResourceOptions(
+        "*": aiohttp_cors.ResourceOptions(
             allow_credentials=True,
             expose_headers="*",
             allow_headers="*",
@@ -91,7 +93,7 @@ def create_app() -> web.Application:
     app.router.add_static('/static', path='./static/', name='static')
 
     policy = SessionIdentityPolicy()
-    setup_security(app, policy, AuthorizationPolicy())
+    setup_security(app, policy, AuthorizationPolicy(app))
 
 
     app.on_startup.append(on_app_startup)
