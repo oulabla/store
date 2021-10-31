@@ -24,6 +24,8 @@ class User(BaseModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     additional_info = Column(String, default='')
+    username = Column(String)
+    password = Column(String)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)    
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

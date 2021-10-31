@@ -6,18 +6,6 @@ from store.logger import AppLogger
 from aiohttp_session import get_session
 
 async def index_view(request: web.Request, logger: AppLogger) -> web.Response:
-    """
-    Optional route description
-    ---
-    summary: This is index page
-    tags:
-      - index
-    responses:
-      '200':
-        description: Expected response to a valid request
-        content:
-          application/json:
-    """
     user_session = await get_session(request)
     
     text = ''

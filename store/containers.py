@@ -7,11 +7,11 @@ from aiohttp import web
 from store.controllers import ( 
     health_controller, 
     user_controller, 
-    role_controller
+    role_controller,
+    security_controller,    
 )
 
-from store.repositories import user_repo
-from store.repositories import role_repo
+from store.repositories import security_repo, user_repo, role_repo
 
 from .logger import AppLogger
 from .database import DataBaseManager
@@ -36,8 +36,10 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     user_repository = providers.Factory(user_repo.UserRepository)
     role_repository = providers.Factory(role_repo.RoleRepository)
+    security_repository = providers.Factory(security_repo.SecurityRepository)
 
     health_controller = providers.Factory(health_controller.HealthController)
+    security_controller = providers.Factory(security_controller.SecurityController, logger=logger, security_repository=security_repository)
     user_controller = providers.Factory(user_controller.UserController, logger=logger, user_repository=user_repository, role_repository=role_repository)
     role_controller = providers.Factory(role_controller.RoleController, logger=logger, role_repository=role_repository)
 

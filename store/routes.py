@@ -4,6 +4,7 @@ from aiohttp import web
 
 def setup_routes(app: web.Application):
 
+    app.container.security_controller().setup(app)
     app.container.user_controller().setup(app)
     app.container.role_controller().setup(app)
 

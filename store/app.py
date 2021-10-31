@@ -6,8 +6,13 @@ from dependency_injector import containers
 import uvloop
 from aiohttp_swagger import *
 import aiotask_context
-from aiohttp_session import setup as setup_sesssion, SimpleCookieStorage
+from aiohttp_session import setup as setup_sesssion 
+# , SimpleCookieStorage
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
+import aiohttp_cors
+
+from store.authorization_policy import AuthorizationPolicy
+from aiohttp_security import SessionIdentityPolicy, setup as setup_security
 
 from .database import DataBaseManager
 from .logger import AppLogger
@@ -45,6 +50,9 @@ async def on_app_shutdown(app: web.Application):
     app.logger.info("Shutting down example_web_app...")
 
 
+
+
+
 def create_app() -> web.Application:
     loop = asyncio.get_event_loop()
     loop.set_task_factory(aiotask_context.task_factory)
@@ -58,7 +66,20 @@ def create_app() -> web.Application:
     fernet_key = fernet.Fernet.generate_key()
     secret_key = base64.urlsafe_b64decode(fernet_key)
     setup_sesssion(app, EncryptedCookieStorage(secret_key))
+
+    cors = aiohttp_cors.setup(app, defaults={
+    "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
+
     setup_routes(app)
+
+    for route in list(app.router.routes()):
+        cors.add(route)
+    
     setup_swagger(app, 
         swagger_url='doc', 
         ui_version=3, 
@@ -66,8 +87,12 @@ def create_app() -> web.Application:
         # definitions=swagger_models_definitions,
         swagger_validator_url='//online.swagger.io/validator'
     )
-    app.router.add_static('/static', path='./static/store-app/src/', name='static')
-    
+    # app.router.add_static('/static', path='./static/store-app/src/', name='static')
+    app.router.add_static('/static', path='./static/', name='static')
+
+    policy = SessionIdentityPolicy()
+    setup_security(app, policy, AuthorizationPolicy())
+
 
     app.on_startup.append(on_app_startup)
     app.on_cleanup.append(on_app_cleanup)
