@@ -2,7 +2,7 @@ from aiohttp import web
 from aiohttp_security.api import check_permission
 from sqlalchemy.orm.exc import NoResultFound
 from store import schemas
-from aiohttp_security import remember
+from aiohttp_security import remember, forget
 
 from store.repositories.security_repo import SecurityRepository
 from . import BaseJsonController
@@ -21,6 +21,7 @@ class SecurityController(BaseJsonController):
     def setup(self, app: web.Application):
         app.add_routes([
             web.post(self.ROUTE + '/login', self.login_handler),
+            web.post(self.ROUTE + '/logout', self.logout_handler),
             web.get(self.ROUTE + '/login2', self.login2_handler),
             web.get(self.ROUTE + '/test', self.login_test),
         ])
@@ -31,6 +32,12 @@ class SecurityController(BaseJsonController):
         return web.json_response({
             "success": True,
         })
+
+    async def logout_handler(self, request: web.Request) -> web.Response:
+        redirect_response = web.HTTPFound('/')
+        await forget(request, redirect_response)
+
+        raise redirect_response
 
     async def login_handler(self, request: web.Request) -> web.Response:
         body = await request.json()    

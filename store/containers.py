@@ -9,9 +9,11 @@ from store.controllers import (
     user_controller, 
     role_controller,
     security_controller,    
+    websocket_controller,
+    employee_controller,
 )
 
-from store.repositories import security_repo, user_repo, role_repo
+from store.repositories import security_repo, user_repo, role_repo, employee_repo
 
 from .logger import AppLogger
 from .database import DataBaseManager
@@ -23,7 +25,6 @@ from store.views import index_view
 
 class ApplicationContainer(containers.DeclarativeContainer):
     container: ApplicationContainer = None
-    
 
     config = providers.Configuration()
 
@@ -37,10 +38,14 @@ class ApplicationContainer(containers.DeclarativeContainer):
     user_repository = providers.Factory(user_repo.UserRepository)
     role_repository = providers.Factory(role_repo.RoleRepository)
     security_repository = providers.Factory(security_repo.SecurityRepository)
+    employee_repository = providers.Factory(employee_repo.EmployeeRepository)
+    
 
     health_controller = providers.Factory(health_controller.HealthController)
     security_controller = providers.Factory(security_controller.SecurityController, logger=logger, security_repository=security_repository)
     user_controller = providers.Factory(user_controller.UserController, logger=logger, user_repository=user_repository, role_repository=role_repository)
     role_controller = providers.Factory(role_controller.RoleController, logger=logger, role_repository=role_repository)
+    websocket_controller = providers.Factory(websocket_controller.WebSocketController)
+    employee_controller = providers.Factory(employee_controller.EmployeeController, logger=logger, employee_repository=employee_repository)
 
     index_view = aiohttp.View(index_view, logger=logger)

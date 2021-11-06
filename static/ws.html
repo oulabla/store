@@ -1,0 +1,28 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <script>
+            const ws = new WebSocket("ws://localhost:8080/ws");
+            ws.onopen = () =>{
+                ws.send(JSON.stringify({
+                    type: 'text',
+                    message: 'shjkad hajsd basjhdb jhasdb jh',
+                }));
+            }
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log(data)
+                if (data.event === 'user') {
+                    // ...
+                }
+
+                if (data.event === 'news') {
+                    // ...
+                }
+            };
+            
+
+        </script>
+    </body>
+</html>
