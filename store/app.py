@@ -2,12 +2,10 @@ import base64
 from cryptography import fernet
 import asyncio
 from aiohttp import web
-from dependency_injector import containers
 import uvloop
-from aiohttp_swagger import *
+from aiohttp_swagger import setup_swagger
 import aiotask_context
-from aiohttp_session import setup as setup_sesssion 
-# , SimpleCookieStorage
+from aiohttp_session import SimpleCookieStorage, setup as setup_sesssion 
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 import aiohttp_cors
 
@@ -50,9 +48,6 @@ async def on_app_shutdown(app: web.Application):
     app.logger.info("Shutting down example_web_app...")
 
 
-
-
-
 def create_app() -> web.Application:
     loop = asyncio.get_event_loop()
     loop.set_task_factory(aiotask_context.task_factory)
@@ -67,6 +62,7 @@ def create_app() -> web.Application:
     fernet_key = "Ank_yFUCW4AruyO_T6cRoRZ99O6BaZC0ys7N9kZ4DIw="
     # print(f'fernet key: {fernet_key}')
     secret_key = base64.urlsafe_b64decode(fernet_key)
+    # setup_sesssion(app, SimpleCookieStorage())
     setup_sesssion(app, EncryptedCookieStorage(secret_key))
 
     cors = aiohttp_cors.setup(app, defaults={
